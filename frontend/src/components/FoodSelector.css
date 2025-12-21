@@ -80,3 +80,17 @@
   color: #666;
 }
 
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  gap: 1rem;
+}
+
+.loading-container p {
+  color: #666;
+  margin: 0;
+}
+

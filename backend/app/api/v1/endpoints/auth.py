@@ -52,9 +52,13 @@ async def login(credentials: UserLogin, db: Session = Depends(get_db)):
     
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.id},
+        data={"sub": str(user.id)},  # Store as string to avoid encoding issues
         expires_delta=access_token_expires
     )
+    
+    # Ensure token is a string
+    if isinstance(access_token, bytes):
+        access_token = access_token.decode('utf-8')
     
     return {"access_token": access_token, "token_type": "bearer"}
 

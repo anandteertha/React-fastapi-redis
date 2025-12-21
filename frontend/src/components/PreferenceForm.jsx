@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '../services/api'
+import LoadingSpinner from './LoadingSpinner'
 import './PreferenceForm.css'
 
 /**
@@ -22,7 +23,7 @@ function PreferenceForm() {
 
   const queryClient = useQueryClient()
 
-  const { data: preferences } = useQuery({
+  const { data: preferences, isLoading } = useQuery({
     queryKey: ['preferences'],
     queryFn: async () => {
       try {
@@ -57,10 +58,7 @@ function PreferenceForm() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['preferences'])
-      alert('Preferences saved successfully!')
-    },
-    onError: (error) => {
-      alert('Error saving preferences: ' + error.message)
+      // Toast is handled by API interceptor
     },
   })
 
@@ -100,6 +98,10 @@ function PreferenceForm() {
       ...formData,
       dietary_restrictions: formData.dietary_restrictions.filter((_, i) => i !== index),
     })
+  }
+
+  if (isLoading) {
+    return <LoadingSpinner />
   }
 
   return (
@@ -214,7 +216,13 @@ function PreferenceForm() {
       </div>
 
       <button type="submit" className="submit-btn" disabled={mutation.isPending}>
-        {mutation.isPending ? 'Saving...' : 'Save Preferences'}
+        {mutation.isPending ? (
+          <>
+            <LoadingSpinner size="small" /> Saving...
+          </>
+        ) : (
+          'Save Preferences'
+        )}
       </button>
     </form>
   )

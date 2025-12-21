@@ -6,8 +6,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.api.v1.router import api_router
-from app.core.database import engine
-from app.models import Base
+from app.core.database import engine, Base
+# Import models to ensure they're registered with SQLAlchemy
+from app.models import User, Food, FoodItem, Meal, MealFood, UserPreference, DietaryRestriction, Goal, DailyReport
 
 # Create database tables
 Base.metadata.create_all(bind=engine)

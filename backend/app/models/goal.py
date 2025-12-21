@@ -1,7 +1,7 @@
 """
 Goal model - BCNF normalized
 """
-from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey, Enum as SQLEnum, Boolean
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum as SQLEnum, Boolean, Numeric
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 import enum
@@ -24,8 +24,8 @@ class Goal(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     goal_type = Column(SQLEnum(GoalType), nullable=False)
-    target_weight_kg = Column(Float)
-    current_weight_kg = Column(Float)
+    target_weight_kg = Column(Numeric(10, 2))
+    current_weight_kg = Column(Numeric(10, 2))
     target_date = Column(DateTime(timezone=True))
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())

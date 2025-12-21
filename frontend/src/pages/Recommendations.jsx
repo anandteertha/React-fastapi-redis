@@ -1,13 +1,14 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { api } from '../services/api'
+import LoadingSpinner from '../components/LoadingSpinner'
 import './Recommendations.css'
 
 function Recommendations() {
   const [targetCalories, setTargetCalories] = useState('')
   const [dietaryRestrictions, setDietaryRestrictions] = useState('')
 
-  const { data, isLoading, refetch } = useQuery({
+  const { data, isLoading, refetch, isFetching } = useQuery({
     queryKey: ['recommendations', targetCalories, dietaryRestrictions],
     queryFn: async () => {
       const params = new URLSearchParams()
@@ -48,14 +49,24 @@ function Recommendations() {
               placeholder="e.g., vegetarian, gluten-free"
             />
           </div>
-          <button onClick={handleGetRecommendations} className="get-recommendations-btn">
-            Get Recommendations
+          <button 
+            onClick={handleGetRecommendations} 
+            className="get-recommendations-btn"
+            disabled={isFetching}
+          >
+            {isFetching ? (
+              <>
+                <LoadingSpinner size="small" /> Loading...
+              </>
+            ) : (
+              'Get Recommendations'
+            )}
           </button>
         </div>
         <div className="recommendations-section">
           <h2>Recommendations</h2>
-          {isLoading ? (
-            <div className="loading">Loading recommendations...</div>
+          {isFetching ? (
+            <LoadingSpinner />
           ) : data?.recommendations ? (
             <div className="recommendations-list">
               {data.recommendations.map((rec, index) => (

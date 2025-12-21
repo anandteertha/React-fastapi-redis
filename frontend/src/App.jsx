@@ -9,11 +9,13 @@ import Reports from './pages/Reports'
 import Recommendations from './pages/Recommendations'
 import Layout from './components/Layout'
 
+import LoadingSpinner from './components/LoadingSpinner'
+
 function PrivateRoute({ children }) {
   const { user, loading } = useAuth()
   
   if (loading) {
-    return <div>Loading...</div>
+    return <LoadingSpinner fullScreen={true} />
   }
   
   return user ? children : <Navigate to="/login" />

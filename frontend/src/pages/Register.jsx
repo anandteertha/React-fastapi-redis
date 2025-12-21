@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import LoadingSpinner from '../components/LoadingSpinner'
 import './Auth.css'
 
 function Register() {
@@ -11,12 +12,14 @@ function Register() {
     full_name: '',
   })
   const [error, setError] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
   const { register, login } = useAuth()
   const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
+    setIsLoading(true)
     
     try {
       await register(formData)
@@ -24,6 +27,8 @@ function Register() {
       navigate('/')
     } catch (err) {
       setError(err.response?.data?.detail || 'Registration failed')
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -69,8 +74,8 @@ function Register() {
               required
             />
           </div>
-          <button type="submit" className="submit-btn">
-            Register
+          <button type="submit" className="submit-btn" disabled={isLoading}>
+            {isLoading ? <LoadingSpinner size="small" /> : 'Register'}
           </button>
         </form>
         <p className="auth-link">

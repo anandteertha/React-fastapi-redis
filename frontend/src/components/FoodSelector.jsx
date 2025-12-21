@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { api } from '../services/api'
+import LoadingSpinner from './LoadingSpinner'
 import './FoodSelector.css'
 
 /**
@@ -54,7 +55,10 @@ function FoodSelector({ onSelect, selectedFoods = [] }) {
       </div>
 
       {isLoading ? (
-        <div className="loading">Loading foods...</div>
+        <div className="loading-container">
+          <LoadingSpinner size="small" />
+          <p>Loading foods...</p>
+        </div>
       ) : (
         <div className="food-list">
           {foods?.map((food) => (

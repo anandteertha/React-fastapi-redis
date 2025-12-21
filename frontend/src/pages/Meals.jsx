@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { api } from '../services/api'
 import FoodSelector from '../components/FoodSelector'
+import LoadingSpinner from '../components/LoadingSpinner'
 import './Meals.css'
 
 function Meals() {
@@ -10,7 +11,7 @@ function Meals() {
   const [notes, setNotes] = useState('')
   const queryClient = useQueryClient()
 
-  const { data: meals } = useQuery({
+  const { data: meals, isLoading } = useQuery({
     queryKey: ['meals'],
     queryFn: async () => {
       const response = await api.get('/meals')
@@ -28,7 +29,7 @@ function Meals() {
       queryClient.invalidateQueries(['report'])
       setSelectedFoods([])
       setNotes('')
-      alert('Meal added successfully!')
+      // Toast is handled by API interceptor
     },
   })
 
@@ -43,7 +44,6 @@ function Meals() {
   const handleSubmit = (e) => {
     e.preventDefault()
     if (selectedFoods.length === 0) {
-      alert('Please add at least one food item')
       return
     }
 
@@ -105,14 +105,22 @@ function Meals() {
                 rows="3"
               />
             </div>
-            <button type="submit" className="submit-btn" disabled={mutation.isPending}>
-              {mutation.isPending ? 'Adding...' : 'Add Meal'}
+            <button type="submit" className="submit-btn" disabled={mutation.isPending || selectedFoods.length === 0}>
+              {mutation.isPending ? (
+                <>
+                  <LoadingSpinner size="small" /> Adding...
+                </>
+              ) : (
+                'Add Meal'
+              )}
             </button>
           </form>
         </div>
         <div className="meals-list-section">
           <h2>Recent Meals</h2>
-          {meals && meals.length > 0 ? (
+          {isLoading ? (
+            <LoadingSpinner />
+          ) : meals && meals.length > 0 ? (
             <div className="meals-list">
               {meals.map((meal) => (
                 <div key={meal.id} className="meal-card">

@@ -1,9 +1,10 @@
 import { useQuery } from '@tanstack/react-query'
 import { api } from '../services/api'
+import LoadingSpinner from '../components/LoadingSpinner'
 import './Dashboard.css'
 
 function Dashboard() {
-  const { data: todayReport, isLoading } = useQuery({
+  const { data: todayReport, isLoading, error } = useQuery({
     queryKey: ['report', 'today'],
     queryFn: async () => {
       const response = await api.get('/reports/today')
@@ -12,7 +13,18 @@ function Dashboard() {
   })
 
   if (isLoading) {
-    return <div className="loading">Loading dashboard...</div>
+    return <LoadingSpinner fullScreen={true} />
+  }
+
+  if (error) {
+    return (
+      <div className="dashboard">
+        <h1>Dashboard</h1>
+        <div className="error-state">
+          <p>Failed to load dashboard data. Please try again.</p>
+        </div>
+      </div>
+    )
   }
 
   return (

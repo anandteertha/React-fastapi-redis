@@ -1,24 +1,29 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import LoadingSpinner from '../components/LoadingSpinner'
 import './Auth.css'
 
 function Login() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
   const { login } = useAuth()
   const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
+    setIsLoading(true)
     
     try {
       await login(username, password)
       navigate('/')
     } catch (err) {
       setError(err.response?.data?.detail || 'Login failed')
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -47,8 +52,8 @@ function Login() {
               required
             />
           </div>
-          <button type="submit" className="submit-btn">
-            Login
+          <button type="submit" className="submit-btn" disabled={isLoading}>
+            {isLoading ? <LoadingSpinner size="small" /> : 'Login'}
           </button>
         </form>
         <p className="auth-link">

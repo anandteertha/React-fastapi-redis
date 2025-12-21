@@ -2,7 +2,7 @@
 Meal models - BCNF normalized
 Separated into Meal (meal instances) and MealFood (junction table)
 """
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum as SQLEnum
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum as SQLEnum, Numeric
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 import enum
@@ -40,7 +40,7 @@ class MealFood(Base):
     id = Column(Integer, primary_key=True, index=True)
     meal_id = Column(Integer, ForeignKey("meals.id"), nullable=False)
     food_id = Column(Integer, ForeignKey("foods.id"), nullable=False)
-    quantity_g = Column(Float, nullable=False)
+    quantity_g = Column(Numeric(10, 2), nullable=False)
     
     # Relationships
     meal = relationship("Meal", back_populates="meal_foods")

@@ -1,9 +1,10 @@
 import { useQuery } from '@tanstack/react-query'
 import { api } from '../services/api'
+import LoadingSpinner from '../components/LoadingSpinner'
 import './Reports.css'
 
 function Reports() {
-  const { data: reports, isLoading } = useQuery({
+  const { data: reports, isLoading, error } = useQuery({
     queryKey: ['reports'],
     queryFn: async () => {
       const response = await api.get('/reports')
@@ -12,7 +13,18 @@ function Reports() {
   })
 
   if (isLoading) {
-    return <div className="loading">Loading reports...</div>
+    return <LoadingSpinner fullScreen={true} />
+  }
+
+  if (error) {
+    return (
+      <div className="reports-page">
+        <h1>Daily Reports</h1>
+        <div className="error-state">
+          <p>Failed to load reports. Please try again.</p>
+        </div>
+      </div>
+    )
   }
 
   return (

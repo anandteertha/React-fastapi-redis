@@ -24,17 +24,49 @@ async def get_current_user(
         headers={"WWW-Authenticate": "Bearer"},
     )
     
+    if not token:
+        raise credentials_exception
+    
+    print(f"DEBUG: Received token: {token[:20]}... (length: {len(token)})")
     payload = decode_access_token(token)
     if payload is None:
-        raise credentials_exception
+        print("DEBUG: Token decode returned None")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token or token expired",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     
-    user_id: int = payload.get("sub")
+    print(f"DEBUG: Payload: {payload}")
+    user_id = payload.get("sub")
+    print(f"DEBUG: User ID from token: {user_id} (type: {type(user_id)})")
     if user_id is None:
-        raise credentials_exception
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token missing user identifier",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    # Ensure user_id is an integer (JWT might encode it as string)
+    try:
+        user_id = int(user_id)
+        print(f"DEBUG: Converted user_id to int: {user_id}")
+    except (ValueError, TypeError) as e:
+        print(f"DEBUG: Failed to convert user_id: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid user identifier in token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     
     user = UserService.get_user_by_id(db, user_id)
+    print(f"DEBUG: User lookup result: {user is not None}")
     if user is None:
-        raise credentials_exception
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User not found",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     
     return user
 

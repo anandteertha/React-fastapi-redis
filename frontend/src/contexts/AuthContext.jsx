@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import { api } from '../services/api'
+import toast from 'react-hot-toast'
 
 const AuthContext = createContext(null)
 
@@ -31,18 +32,29 @@ export function AuthProvider({ children }) {
   }
 
   const login = async (username, password) => {
-    const response = await api.post('/auth/login', { username, password })
-    const { access_token } = response.data
-    localStorage.setItem('token', access_token)
-    setToken(access_token)
-    api.defaults.headers.common['Authorization'] = `Bearer ${access_token}`
-    await fetchUser()
-    return response.data
+    try {
+      const response = await api.post('/auth/login', { username, password })
+      const { access_token } = response.data
+      localStorage.setItem('token', access_token)
+      setToken(access_token)
+      api.defaults.headers.common['Authorization'] = `Bearer ${access_token}`
+      await fetchUser()
+      return response.data
+    } catch (error) {
+      // Error toast is handled by API interceptor
+      throw error
+    }
   }
 
   const register = async (userData) => {
-    const response = await api.post('/auth/register', userData)
-    return response.data
+    try {
+      const response = await api.post('/auth/register', userData)
+      // Success toast is handled by API interceptor
+      return response.data
+    } catch (error) {
+      // Error toast is handled by API interceptor
+      throw error
+    }
   }
 
   const logout = () => {
@@ -50,6 +62,7 @@ export function AuthProvider({ children }) {
     setToken(null)
     setUser(null)
     delete api.defaults.headers.common['Authorization']
+    toast.success('Logged out successfully')
   }
 
   return (
