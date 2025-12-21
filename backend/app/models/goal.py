@@ -1,7 +1,7 @@
 """
 Goal model - BCNF normalized
 """
-from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey, Enum as SQLEnum
+from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey, Enum as SQLEnum, Boolean
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 import enum

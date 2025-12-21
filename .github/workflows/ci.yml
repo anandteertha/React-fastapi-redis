@@ -2,14 +2,14 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
 
 jobs:
   backend-tests:
     runs-on: ubuntu-latest
-    
+
     services:
       mysql:
         image: mysql:8.0
@@ -19,101 +19,100 @@ jobs:
         ports:
           - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
-      
+
       redis:
         image: redis:7-alpine
         ports:
           - 6379:6379
         options: --health-cmd="redis-cli ping" --health-interval=10s --health-timeout=5s --health-retries=3
-    
+
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
-    
-    - name: Install dependencies
-      run: |
-        cd backend
-        pip install -r requirements.txt
-    
-    - name: Run tests
-      env:
-        DATABASE_URL: mysql+pymysql://root:root@localhost:3306/nutribite_test
-        REDIS_URL: redis://localhost:6379/0
-        SECRET_KEY: test-secret-key
-        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-      run: |
-        cd backend
-        pytest tests/ -v --cov=app --cov-report=xml
-    
-    - name: Upload coverage
-      uses: codecov/codecov-action@v3
-      with:
-        file: ./backend/coverage.xml
-        flags: backend
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          cd backend
+          pip install -r requirements.txt
+
+      - name: Run tests
+        env:
+          DATABASE_URL: mysql+pymysql://root:root@localhost:3306/nutribite_test
+          REDIS_URL: redis://localhost:6379/0
+          SECRET_KEY: test-secret-key
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          cd backend
+          pytest tests/ -v --cov=app --cov-report=xml
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./backend/coverage.xml
+          flags: backend
 
   frontend-tests:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
-        cache: 'npm'
-        cache-dependency-path: frontend/package-lock.json
-    
-    - name: Install dependencies
-      run: |
-        cd frontend
-        npm ci
-    
-    - name: Build frontend
-      run: |
-        cd frontend
-        npm run build
-    
-    - name: Run Cypress tests
-      uses: cypress-io/github-action@v5
-      with:
-        working-directory: frontend
-        start: npm run dev
-        wait-on: 'http://localhost:3000'
-        wait-on-timeout: 120
-      env:
-        CYPRESS_baseUrl: http://localhost:3000
+      - uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          cd frontend
+          npm ci
+
+      - name: Build frontend
+        run: |
+          cd frontend
+          npm run build
+
+      - name: Run Cypress tests
+        uses: cypress-io/github-action@v5
+        with:
+          working-directory: frontend
+          start: npm run dev
+          wait-on: "http://localhost:3000"
+          wait-on-timeout: 120
+        env:
+          CYPRESS_baseUrl: http://localhost:3000
 
   lint:
     runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v3
-    
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
-    
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
-    
-    - name: Lint backend
-      run: |
-        cd backend
-        pip install flake8
-        flake8 app --count --select=E9,F63,F7,F82 --show-source --statistics
-        flake8 app --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    
-    - name: Lint frontend
-      run: |
-        cd frontend
-        npm ci
-        npm run lint
 
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Lint backend
+        run: |
+          cd backend
+          pip install flake8
+          flake8 app --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 app --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+      - name: Lint frontend
+        run: |
+          cd frontend
+          npm ci
+          npm run lint
