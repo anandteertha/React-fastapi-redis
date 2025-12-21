@@ -1,6 +1,23 @@
 # NutriBite
 
-A comprehensive nutrition tracking and recommendation application built with FastAPI, React, MySQL, and Redis.
+<div align="center">
+
+[![CI/CD](https://img.shields.io/github/actions/workflow/status/yourusername/NutriBite/ci.yml?branch=main&label=CI%2FCD&logo=github)](https://github.com/yourusername/NutriBite/actions)
+[![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-18+-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.104.1-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![React](https://img.shields.io/badge/React-18.2-61DAFB?logo=react&logoColor=white)](https://reactjs.org/)
+[![MySQL](https://img.shields.io/badge/MySQL-8.0+-4479A1?logo=mysql&logoColor=white)](https://www.mysql.com/)
+[![Redis](https://img.shields.io/badge/Redis-7+-DC382D?logo=redis&logoColor=white)](https://redis.io/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+**A comprehensive nutrition tracking and recommendation application**
+
+*Built with FastAPI, React, MySQL, and Redis*
+
+[Features](#features) • [Setup](#setup) • [API Docs](#api-documentation) • [Tests](#running-tests)
+
+</div>
 
 ## Features
 
@@ -76,21 +93,25 @@ NutriBite/
 cd backend
 ```
 
-2. Create virtual environment:
+2. Create and activate virtual environment:
 ```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+python -m venv nutribite
+# On Windows:
+.\nutribite\Scripts\Activate.ps1
+# On Linux/Mac:
+source nutribite/bin/activate
 ```
 
 3. Install dependencies:
 ```bash
+pip install --upgrade pip setuptools wheel
 pip install -r requirements.txt
 ```
 
 4. Set up environment variables:
 ```bash
 cp .env.example .env
-# Edit .env with your configuration
+# Edit .env with your configuration (DATABASE_URL, REDIS_URL, SECRET_KEY, etc.)
 ```
 
 5. Set up database:
@@ -100,7 +121,8 @@ mysql -u root -p < database/schema.sql
 
 6. Run the server:
 ```bash
-uvicorn app.main:app --reload
+python run.py
+# Or: uvicorn app.main:app --reload
 ```
 
 ### Frontend Setup
@@ -179,13 +201,48 @@ The project includes GitHub Actions workflows for:
 - Code linting
 - Coverage reporting
 
+## Development
+
+### Running in Development Mode
+
+**Backend:**
+```bash
+cd backend
+.\nutribite\Scripts\Activate.ps1  # Windows
+python run.py
+```
+
+**Frontend:**
+```bash
+cd frontend
+npm run dev
+```
+
+The frontend will be available at `http://localhost:3000` and the backend API at `http://localhost:8000`.
+
 ## Contributing
+
+Contributions are welcome! Please follow these guidelines:
 
 1. Follow SOLID principles
 2. Write tests for new features
 3. Update documentation
 4. Ensure all tests pass
+5. Follow the existing code style
+
+## Project Status
+
+✅ Backend API complete  
+✅ Frontend UI complete  
+✅ Database schema implemented  
+✅ RAG recommender integrated  
+✅ Test suite configured  
+✅ CI/CD pipeline set up  
 
 ## License
 
-MIT License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+**Note:** Update the GitHub username in the badges above (`yourusername`) to match your repository.
